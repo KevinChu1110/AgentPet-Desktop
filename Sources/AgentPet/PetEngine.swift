@@ -1,6 +1,10 @@
 import Foundation
 import Observation
 
+enum PetStage: String, Codable {
+    case egg, baby, teen, adult
+}
+
 struct PetMod: Codable {
     let id: String
     let name: String
@@ -26,6 +30,14 @@ class PetEngine {
     var stage: PetStage = .egg
     var lastWords: String = "主人，今天也要一起寫 Code 嗎？"
     
+    // === 冒險系統變數 ===
+    var worldProgress: Double = 0.0 // 0.0 ~ 100.0
+    var currentWorld: String = "虛擬森林"
+    
+    private let worlds = [
+        "虛擬森林", "編譯荒漠", "雲端神殿", "神經網路海", "量子核心"
+    ]
+    
     init() {
         loadDefaultMod()
     }
@@ -47,15 +59,32 @@ class PetEngine {
         let amount = (context == "success" ? 15 : 10)
         addExp(amount: amount)
         
+        // 增加冒險進度
+        worldProgress += 5.0
+        if worldProgress >= 100.0 {
+            worldProgress = 0.0
+            advanceWorld()
+        }
+        
+        updateLastWords()
+    }
+    
+    private func advanceWorld() {
+        if let currentIndex = worlds.firstIndex(of: currentWorld), currentIndex < worlds.count - 1 {
+            currentWorld = worlds[currentIndex + 1]
+            lastWords = "🎊 抵達了新區域：\(currentWorld)！"
+        }
+    }
+    
+    private func updateLastWords() {
         let randomQuotes = [
-            "主人這份 Code 寫得真漂亮！",
+            "在 \(currentWorld) 發現了一個被遺棄的 JSON！",
+            "剛才差點掉進 Stack Overflow 的陷阱...",
+            "主人加油，我們快要走完 \(currentWorld) 了！",
             "嘿嘿，我又變強了一點點！",
-            "剛才那個 Bug 解決了嗎？",
-            "主人加油，你是最棒的工程師！",
-            "呼...寫程式好累，但我會陪著你。",
-            "LV.\(level) 的我，已經能看懂一點點 Python 了喔！"
+            "LV.\(level) 的我，現在充滿幹勁！"
         ]
-        lastWords = randomQuotes.randomElement() ?? "繼續努力！"
+        lastWords = randomQuotes.randomElement() ?? "繼續前進！"
     }
     
     func addExp(amount: Int) {
@@ -69,6 +98,7 @@ class PetEngine {
     private func updateLevelAndStage() {
         level = Int(sqrt(Double(exp) / 10.0)) + 1
         guard let mod = currentMod else { return }
+        
         if level >= (mod.evolutionLevels["adult"] ?? 30) { stage = .adult }
         else if level >= (mod.evolutionLevels["teen"] ?? 10) { stage = .teen }
         else if level >= (mod.evolutionLevels["baby"] ?? 2) { stage = .baby }
@@ -87,11 +117,15 @@ class PetEngine {
         UserDefaults.standard.set(exp, forKey: "pet_exp")
         UserDefaults.standard.set(name, forKey: "pet_name")
         UserDefaults.standard.set(lastInteraction, forKey: "pet_last_date")
+        UserDefaults.standard.set(currentWorld, forKey: "pet_world")
+        UserDefaults.standard.set(worldProgress, forKey: "pet_progress")
     }
     
     func load() {
         exp = UserDefaults.standard.integer(forKey: "pet_exp")
         name = UserDefaults.standard.string(forKey: "pet_name") ?? "CLI Agent"
+        currentWorld = UserDefaults.standard.string(forKey: "pet_world") ?? "虛擬森林"
+        worldProgress = UserDefaults.standard.double(forKey: "pet_progress")
         if let lastDate = UserDefaults.standard.object(forKey: "pet_last_date") as? Date {
             lastInteraction = lastDate
         }
