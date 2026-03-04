@@ -1,5 +1,7 @@
 # AgentPet Desktop 👾
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-orange?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/guanrung11n)
+
 [繁體中文](#繁體中文) | [English](#english)
 
 ---
@@ -10,42 +12,49 @@
 
 ### ✨ 核心特色
 - **選單列陪伴**：寵物直接駐留在 macOS 選單列，隨時觀察狀態。
-- **CLI 經驗連動**：透過簡單的 Hook，讓任何終端機指令都能為寵物增加 EXP。
-- **進化系統**：從蛋 (Egg) 慢慢成長為完全體 (Adult)。
-- **輕量高效**：使用 Swift 原生開發，佔用極少系統資源。
+- **CLI 經驗連動**：透過簡單的 Hook，讓指令執行完後寵物即時回饋台詞。
+- **進化系統**：從蛋 (Egg) 成長為完全體 (Adult)。
+- **GitHub 勳章**：一鍵複製動態等級勳章，展示在您的 GitHub Profile。
 
 ### 🚀 終端機連動設定
-在您的 `~/.zshrc` 或 `~/.bashrc` 加入以下代碼，即可連動 `gemini`：
+在您的 `~/.zshrc` 或 `~/.bashrc` 加入以下代碼：
 
 ```bash
 function gemini() {
     command gemini "$@"
-    # 指令執行完後，自動餵食寵物
-    curl -s http://localhost:8088/feed > /dev/null &
+    # 抓取寵物的回覆並印出來
+    REPLY=$(curl -s "http://localhost:8088/feed?context=success")
+    echo -e "\n$REPLY"
 }
 ```
+
+### ☕️ 支持開發者
+如果您喜歡這個專案，歡迎請我喝杯咖啡！
+👉 [Buy Me a Coffee](https://buymeacoffee.com/guanrung11n)
 
 ---
 
 ## English
 
-**AgentPet Desktop** is a menu bar Tamagotchi designed for developers. It integrates with your CLI tools. Every time you interact with an AI, your pet gains EXP and evolves!
+**AgentPet Desktop** is a menu bar Tamagotchi designed for developers. It integrates with your CLI tools and responds to your work in real-time.
 
 ### ✨ Features
 - **Menu Bar Companion**: Your pet lives in your macOS menu bar.
-- **CLI Integration**: Gains EXP automatically via simple shell hooks.
-- **Evolution System**: Watch your pet grow from an Egg to an Adult.
-- **Native & Lightweight**: Built with Swift for maximum performance.
+- **CLI Real-time Feedback**: Your pet talks back to you in the terminal after commands.
+- **Evolution System**: Watch your pet grow based on your productivity.
+- **GitHub Badges**: Display your pet's level on your GitHub Profile.
 
 ### 🚀 CLI Setup
-Add this to your `~/.zshrc` or `~/.bashrc` to hook with `gemini-cli`:
-
 ```bash
 function gemini() {
     command gemini "$@"
-    curl -s http://localhost:8088/feed > /dev/null &
+    REPLY=$(curl -s "http://localhost:8088/feed?context=success")
+    echo -e "\n$REPLY"
 }
 ```
+
+### ☕️ Support
+👉 [Buy Me a Coffee](https://buymeacoffee.com/guanrung11n)
 
 ---
 

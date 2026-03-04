@@ -6,11 +6,16 @@ class LocalServer {
     
     func start() {
         server["/feed"] = { request in
-            Task { @MainActor in
-                PetEngine.shared.addExp(amount: 10)
-                print("Received feed signal from CLI!")
+            // 取得 context 參數 (例如 success, error)
+            let context = request.queryParameters.first(where: { $0.0 == "context" })?.1 ?? "default"
+            
+            return .async {
+                await MainActor.run {
+                    PetEngine.shared.handleCLIInteraction(context: context)
+                    let responseMsg = " [\(PetEngine.shared.getSprite()) AgentPet]: \(PetEngine.shared.lastWords)"
+                    return .ok(.text(responseMsg))
+                }
             }
-            return .ok(.text("Pet Fed!"))
         }
         
         do {
